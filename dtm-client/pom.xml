@@ -13,6 +13,21 @@
     <version>3.0.0</version>
     <packaging>jar</packaging>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <failurePriority>2</failurePriority>
+                    <excludes>
+                        <exclude>**/BarrierParam.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.cowave.commons</groupId>

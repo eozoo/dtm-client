@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ *
+ * For licensing information, please contact: https://www.cowave.com.
+ *
+ * This code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
 package com.cowave.example.dtm.controller;
 
 import com.cowave.commons.dtm.impl.Barrier;
@@ -23,35 +31,35 @@ public class ApiBarrierController {
     private final DataSource dataSource;
 
     @RequestMapping("barrierTransOutTry")
-    public DtmResponse TransOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public DtmResponse transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutPrepare(transReq));
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransOutConfirm")
-    public Object TransOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public Object transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutSubmit(transReq));
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransOutCancel")
-    public Object TransOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public Object transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutCancel(transReq));
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransInTry")
-    public Object TransInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public Object transInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transInPrepare(transReq));
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransInConfirm")
-    public HttpResponse<String> TransInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
+    public HttpResponse<String> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         try{
             branchBarrier.call((barrier) -> this.transInSubmit(transReq));
@@ -62,7 +70,7 @@ public class ApiBarrierController {
     }
 
     @RequestMapping("barrierTransInCancel")
-    public Object TransInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public Object transInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transInCancel(transReq));
         return DtmResponse.success();

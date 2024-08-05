@@ -1,0 +1,145 @@
+## dtm-client DTM事务接入
+
+### 功能说明
+
+- 提供了一些DTM事务的接入操作；
+
+#### 依赖
+
+```xml
+<dependency>
+    <groupId>com.cowave.commons</groupId>
+    <artifactId>dtm-client</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+### 使用示例
+
+> 具体示例参考: dtm-example
+
+#### 1. Saga
+
+> Saga将长事务拆分为多个step，由事务协调器协调，如果各个短事务都成功则正常完成；如果某个step失败，则根据相反顺序依次调用补偿操作；
+
+```java
+@RequiredArgsConstructor
+@RestController
+@RequestMapping(("/api"))
+public class SagaController {
+
+    private final DtmClient dtmClient;
+
+    @RequestMapping("/saga")
+    public DtmResponse saga() throws DtmException {
+        Saga saga = dtmClient.saga(UUID.randomUUID().toString());
+        saga.add("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
+        saga.add("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
+        saga.enableWaitResult();
+        return saga.submit();
+    }
+}
+```
+
+#### 2. Tcc
+
+> Tcc将事务分为3个阶段: Try-Confirm-Cancel，所有分支事务都先执行Try操作，全部完成后再统一执行Confirm操作，如果某个操作分支失败了，则执行Cancel操作；
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+@RequestMapping(("/api"))
+@RestController
+public class TccController {
+
+    private final DtmClient dtmClient;
+
+    @RequestMapping("tcc/barrier")
+    public DtmResponse tccBarrier() throws Exception {
+        return dtmClient.tcc("", UUID.randomUUID().toString(), this::barrierBranch);
+    }
+
+    public void barrierBranch(Tcc tcc) throws Exception {
+        String outResponse = tcc.branch(
+                "http://localhost:8081/api/barrierTransOutTry",
+                "http://localhost:8081/api/barrierTransOutConfirm",
+                "http://localhost:8081/api/barrierTransOutCancel",
+                new TransReq(1, -30));
+        log.info("tcc branch out: " + outResponse);
+
+        String inResponse = tcc.branch(
+                "http://localhost:8081/api/barrierTransInTry",
+                "http://localhost:8081/api/barrierTransInConfirm",
+                "http://localhost:8081/api/barrierTransInCancel",
+                new TransReq(2, 30));
+        log.info("tcc branch in: " + inResponse);
+    }
+}
+```
+
+> 针对补偿或取消操作，为了防止重复执行等问题，引入了Barrier，就是通过记录比较一些标识信息来避免重复或空悬问题；
+
+```java 
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api")
+public class ApiBarrierController {
+
+    private final DataSource dataSource;
+
+    @RequestMapping("barrierTransOutTry")
+    public DtmResponse transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
+        branchBarrier.call((barrier) -> this.transOutPrepare(transReq));
+        return DtmResponse.success();
+    }
+
+    @RequestMapping("barrierTransOutConfirm")
+    public Object transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
+        branchBarrier.call((barrier) -> this.transOutSubmit(transReq));
+        return DtmResponse.success();
+    }
+
+    @RequestMapping("barrierTransOutCancel")
+    public Object transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
+        branchBarrier.call((barrier) -> this.transOutCancel(transReq));
+        return DtmResponse.success();
+    }
+
+    // ... ...
+
+    @RequestMapping("barrierTransInConfirm")
+    public HttpResponse<String> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
+        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
+        try {
+            branchBarrier.call((barrier) -> this.transInSubmit(transReq));
+        } catch (Exception e) {
+            return new HttpResponse<>(409, null, null);
+        }
+        return HttpResponse.success();
+    }
+
+    private void transOutPrepare(TransReq transReq) {
+        log.info("user[{}] 转出准备 {}", transReq.getUserId(), transReq.getAmount());
+    }
+
+    public void transOutSubmit(TransReq transReq) {
+        log.info("user[{}] 转出提交 {}", transReq.getUserId(), transReq.getAmount());
+    }
+
+    public void transOutCancel(TransReq transReq) {
+        log.info("user[{}] 转出回滚 {}", transReq.getUserId(), transReq.getAmount());
+    }
+
+    // ... ...
+
+    private void transInSubmit(TransReq transReq) {
+        Asserts.isTrue(transReq.getAmount() <= 1000, "金额过大");
+        log.info("user[{}] 转入提交 {}", transReq.getUserId(), transReq.getAmount());
+    }
+}
+```
+

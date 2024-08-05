@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ *
+ * For licensing information, please contact: https://www.cowave.com.
+ *
+ * This code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
 package com.cowave.example.dtm.controller;
 
 import com.cowave.commons.dtm.DtmClient;
@@ -5,13 +13,11 @@ import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.impl.Saga;
 import com.cowave.commons.dtm.model.DtmResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(("/api"))
