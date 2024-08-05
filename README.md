@@ -79,6 +79,8 @@ public class TccController {
 
 > 针对补偿或取消操作，为了防止重复执行等问题，引入了Barrier，就是通过记录比较一些标识信息来避免重复或空悬问题；
 
+> Barrier默认是往一张表dtm_barrier(mysql语法)中记录信息，如果使用自定义的表，可以覆盖下方法: Barrier.insertBarrier；
+
 ```java 
 @Slf4j
 @RequiredArgsConstructor
