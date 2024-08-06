@@ -31,49 +31,49 @@ public class ApiBarrierController {
     private final DataSource dataSource;
 
     @RequestMapping("barrierTransOutTry")
-    public DtmResult transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public HttpResponse<DtmResult> transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutPrepare(transReq));
-        return DtmResult.success();
+        return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransOutConfirm")
-    public Object transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public HttpResponse<DtmResult> transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutSubmit(transReq));
-        return DtmResult.success();
+        return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransOutCancel")
-    public Object transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public HttpResponse<DtmResult> transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transOutCancel(transReq));
-        return DtmResult.success();
+        return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransInTry")
-    public Object transInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public HttpResponse<DtmResult> transInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transInPrepare(transReq));
-        return DtmResult.success();
+        return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransInConfirm")
-    public HttpResponse<String> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
+    public HttpResponse<DtmResult> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         try{
             branchBarrier.call((barrier) -> this.transInSubmit(transReq));
         }catch (Exception e){
-            return new HttpResponse<>(409, null, null);
+            return DtmResult.httpFailure(); // 不再重试
         }
-        return HttpResponse.success();
+        return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransInCancel")
-    public Object transInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+    public HttpResponse<DtmResult> transInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam, dataSource);
         branchBarrier.call((barrier) -> this.transInCancel(transReq));
-        return DtmResult.success();
+        return DtmResult.httpSuccess();
     }
 
     private void transOutPrepare(TransReq transReq) {

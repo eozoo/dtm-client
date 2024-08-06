@@ -22,6 +22,14 @@ import org.springframework.feign.codec.HttpResponse;
 @NoArgsConstructor
 public class DtmResult {
 
+    public static final int CODE_SUCCESS = 200;
+
+    public static final int CODE_FAILURE = 409;
+
+    public static final int CODE_ONGOING = 425;
+
+    public static final int CODE_ERROR = 500;
+
     public static final String SUCCESS = "SUCCESS";
 
     public static final String FAILURE = "FAILURE";
@@ -65,12 +73,18 @@ public class DtmResult {
         return  new DtmResult(SUCCESS, detail);
     }
 
+    /**
+     * 成功
+     */
     public static HttpResponse<DtmResult> httpSuccess(){
-        return new HttpResponse<>(200, null, success());
+        return new HttpResponse<>(CODE_SUCCESS, null, success());
     }
 
+    /**
+     * 成功
+     */
     public static HttpResponse<DtmResult> httpSuccess(String detail){
-        return new HttpResponse<>(200, null, success(detail), detail);
+        return new HttpResponse<>(CODE_SUCCESS, null, success(detail), detail);
     }
 
     public static DtmResult failure(){
@@ -81,12 +95,18 @@ public class DtmResult {
         return  new DtmResult(FAILURE, detail);
     }
 
+    /**
+     * 失败，不再重试
+     */
     public static HttpResponse<DtmResult> httpFailure(){
-        return new HttpResponse<>(409, null, failure());
+        return new HttpResponse<>(CODE_FAILURE, null, failure());
     }
 
+    /**
+     * 失败，不再重试
+     */
     public static HttpResponse<DtmResult> httpFailure(String detail){
-        return new HttpResponse<>(409, null, failure(detail), detail);
+        return new HttpResponse<>(CODE_FAILURE, null, failure(detail), detail);
     }
 
     public static DtmResult ongoing(){
@@ -97,12 +117,18 @@ public class DtmResult {
         return new DtmResult(ONGOING, detail);
     }
 
+    /**
+     * 进行中，固定间隔重试
+     */
     public static HttpResponse<DtmResult> httpOngoing(){
-        return new HttpResponse<>(425, null, ongoing());
+        return new HttpResponse<>(CODE_ONGOING, null, ongoing());
     }
 
+    /**
+     * 进行中，固定间隔重试
+     */
     public static HttpResponse<DtmResult> httpOngoing(String detail){
-        return new HttpResponse<>(425, null, ongoing(detail), detail);
+        return new HttpResponse<>(CODE_ONGOING, null, ongoing(detail), detail);
     }
 
     public static DtmResult error(){
@@ -113,11 +139,17 @@ public class DtmResult {
         return new DtmResult(ERROR, detail);
     }
 
+    /**
+     * 异常，指数退避重试
+     */
     public static HttpResponse<DtmResult> httpError(){
-        return new HttpResponse<>(500, null, error());
+        return new HttpResponse<>(CODE_ERROR, null, error());
     }
 
+    /**
+     * 异常，指数退避重试
+     */
     public static HttpResponse<DtmResult> httpError(String detail){
-        return new HttpResponse<>(500, null, error(detail), detail);
+        return new HttpResponse<>(CODE_ERROR, null, error(detail), detail);
     }
 }

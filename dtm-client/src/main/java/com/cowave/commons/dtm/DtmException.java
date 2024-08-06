@@ -8,13 +8,25 @@
  */
 package com.cowave.commons.dtm;
 
+import lombok.Getter;
+
+/**
+ *
+ * @author shanhuiming
+ *
+ */
+@Getter
 public class DtmException extends Exception {
 
-    public DtmException(String message) {
+    private final int status;
+
+    public DtmException(int status, String message) {
         super(message);
+        this.status = status;
     }
 
-    public DtmException(String message, Throwable cause) {
+    public DtmException(int status, String message, Throwable cause) {
         super(message, cause);
+        this.status = status;
     }
 }

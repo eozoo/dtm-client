@@ -10,6 +10,7 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.DtmOperator;
+import com.cowave.commons.dtm.DtmResult;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -62,12 +63,16 @@ public class Barrier extends DtmTransaction {
                 connection.commit();
                 connection.setAutoCommit(true);
             }
+        } catch (DtmException e){
+            connection.rollback();
+            connection.setAutoCommit(true);
+            throw e;
         } catch (Exception e) {
             if(connection != null){
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new DtmException("DTM Barrier operate failed", e);
+            throw new DtmException(DtmResult.CODE_ERROR, "DTM Barrier operate failed", e);
         } finally {
             if(connection != null){
                 connection.close();

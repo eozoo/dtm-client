@@ -52,13 +52,13 @@ public class Tcc extends DtmTransaction {
         if (StringUtils.isEmpty(this.getGid())) {
             HttpResponse<DtmResult> gidResponse = dtmService.newGid();
             if(gidResponse.isFailed()){
-                throw new DtmException("DTM Tcc acquire gid failed, " + gidResponse.getMessage());
+                throw new DtmException(gidResponse.getStatusCodeValue(), "DTM Tcc acquire gid failed, " + gidResponse.getMessage());
             }
             DtmResult gidResult = gidResponse.getBody();
             if(gidResult != null && gidResult.dtmSuccess()){
                 this.setGid(gidResult.getGid());
             }else{
-                throw new DtmException("DTM Tcc acquire gid failed");
+                throw new DtmException(DtmResult.CODE_FAILURE, "DTM Tcc acquire gid failed");
             }
         }
 
@@ -66,11 +66,11 @@ public class Tcc extends DtmTransaction {
         DtmParam tccParam = new DtmParam(this.getGid(), Type.TCC);
         HttpResponse<DtmResult> prepareResponse = dtmService.prepare(tccParam);
         if(prepareResponse.isFailed()){
-            throw new DtmException("DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
+            throw new DtmException(prepareResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
         }
         DtmResult prepareResult = prepareResponse.getBody();
         if(prepareResult == null || !prepareResult.dtmSuccess()){
-            throw new DtmException("DTM Tcc " + this.getGid() + " submit failed");
+            throw new DtmException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
         }
 
         // operate
@@ -81,11 +81,11 @@ public class Tcc extends DtmTransaction {
         HttpResponse<DtmResult> submitResponse = dtmService.submit(tccParam);
         if(submitResponse.isFailed()){
             dtmService.abort(tccParam);
-            throw new DtmException("DTM Tcc " + this.getGid() + " submit failed, " + submitResponse.getMessage());
+            throw new DtmException(submitResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " submit failed, " + submitResponse.getMessage());
         }
         DtmResult submitResult = submitResponse.getBody();
         if (submitResult == null || !submitResult.dtmSuccess()) {
-            throw new DtmException("DTM Tcc " + this.getGid() + " submit failed");
+            throw new DtmException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
         }
 
         submitResult.setGid(this.getGid());
@@ -107,11 +107,11 @@ public class Tcc extends DtmTransaction {
         // register
         HttpResponse<DtmResult> registerResponse = dtmService.registerBranch(operatorParam);
         if(registerResponse.isFailed()){
-            throw new DtmException("DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
+            throw new DtmException(registerResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
         }
         DtmResult registerResult = registerResponse.getBody();
         if (registerResult == null || !registerResult.dtmSuccess()) {
-            throw new DtmException("DTM Tcc " + this.getGid() + " branch register failed");
+            throw new DtmException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " branch register failed");
         }
 
         // try
@@ -122,7 +122,7 @@ public class Tcc extends DtmTransaction {
         branchParam.put("trans_type", Type.TCC.getValue());
         HttpResponse<String> httpResponse = dtmService.businessPost(tryUrl, branchParam, requestBody);
         if(httpResponse.getStatusCodeValue() >= 400){
-            throw new DtmException("DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
+            throw new DtmException(httpResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
         }
         return httpResponse.getBody();
     }

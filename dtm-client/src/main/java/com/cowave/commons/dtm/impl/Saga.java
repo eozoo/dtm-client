@@ -70,7 +70,7 @@ public class Saga extends DtmTransaction {
         try {
             payloads.add(toJson(data));
         } catch (Exception e) {
-            throw new DtmException("DTM Saga add step failed", e);
+            throw new DtmException(DtmResult.CODE_FAILURE, "DTM Saga add step failed", e);
         }
         steps.add(Map.of("action", action, "compensate", compensate));
         return this;
@@ -83,14 +83,14 @@ public class Saga extends DtmTransaction {
         if (StringUtils.isEmpty(this.getGid())) {
             HttpResponse<DtmResult> gidResponse = dtmService.newGid();
             if(gidResponse.isFailed()){
-                throw new DtmException("DTM Saga acquire gid failed, " + gidResponse.getMessage());
+                throw new DtmException(gidResponse.getStatusCodeValue(), "DTM Saga acquire gid failed, " + gidResponse.getMessage());
             }
 
             DtmResult gidResult = gidResponse.getBody();
             if(gidResult != null && gidResult.dtmSuccess()){
                 this.setGid(gidResult.getGid());
             }else{
-                throw new DtmException("DTM Saga acquire gid failed");
+                throw new DtmException(DtmResult.CODE_FAILURE, "DTM Saga acquire gid failed");
             }
         }
 
@@ -110,11 +110,11 @@ public class Saga extends DtmTransaction {
 
         HttpResponse<DtmResult> submitResponse = dtmService.submit(sagaParam);
         if(submitResponse.isFailed()){
-            throw new DtmException("DTM Saga " + this.getGid() + " submit failed, " + submitResponse.getMessage());
+            throw new DtmException(submitResponse.getStatusCodeValue(), "DTM Saga " + this.getGid() + " submit failed, " + submitResponse.getMessage());
         }
         DtmResult submitResult = submitResponse.getBody();
         if (submitResult == null || !submitResult.dtmSuccess()) {
-            throw new DtmException("DTM Saga " + this.getGid() + " submit failed");
+            throw new DtmException(DtmResult.CODE_FAILURE, "DTM Saga " + this.getGid() + " submit failed");
         }
 
         submitResult.setGid(this.getGid());
@@ -162,7 +162,7 @@ public class Saga extends DtmTransaction {
             try {
                 this.customData = toJson(data);
             } catch (Exception e) {
-                throw new DtmException("DTM Saga " + this.getGid() + " submit failed", e);
+                throw new DtmException(DtmResult.CODE_FAILURE, "DTM Saga " + this.getGid() + " submit failed", e);
             }
         }
     }

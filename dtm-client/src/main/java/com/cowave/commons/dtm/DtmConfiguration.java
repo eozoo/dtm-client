@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * 默认了package都以com.cowave为根
+ *
+ * @author shanhuiming
  */
 @RequiredArgsConstructor
 @EnableConfigurationProperties(DtmProperties.class)
