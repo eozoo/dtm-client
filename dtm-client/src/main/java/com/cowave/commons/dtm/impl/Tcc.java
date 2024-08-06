@@ -10,6 +10,7 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.*;
 import com.cowave.commons.dtm.DtmResult;
+import com.cowave.commons.tools.HttpAsserts;
 import com.cowave.commons.tools.HttpException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,30 +53,28 @@ public class Tcc extends DtmTransaction {
         // gid
         if (StringUtils.isEmpty(this.getGid())) {
             HttpResponse<DtmResult> gidResponse = dtmService.newGid();
-            if(gidResponse.isFailed()){
-                throw new HttpException(gidResponse.getStatusCodeValue(), "DTM Tcc acquire gid failed, " + gidResponse.getMessage());
-            }
+            HttpAsserts.isTrue(gidResponse.isSuccess(),
+                    gidResponse.getStatusCodeValue(), "DTM Tcc acquire gid failed, " + gidResponse.getMessage());
+
             DtmResult gidResult = gidResponse.getBody();
-            if(gidResult != null && gidResult.dtmSuccess()){
-                this.setGid(gidResult.getGid());
-            }else{
-                throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc acquire gid failed");
-            }
+            HttpAsserts.isTrue(gidResult != null && gidResult.dtmSuccess(),
+                    DtmResult.CODE_FAILURE, "DTM Tcc acquire gid failed");
+
+            this.setGid(gidResult.getGid());
         }
 
         // prepare
         DtmParam tccParam = new DtmParam(this.getGid(), Type.TCC);
         HttpResponse<DtmResult> prepareResponse = dtmService.prepare(tccParam);
-        if(prepareResponse.isFailed()){
-            throw new HttpException(prepareResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
-        }
+        HttpAsserts.isTrue(prepareResponse.isSuccess(),
+                prepareResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
+
         DtmResult prepareResult = prepareResponse.getBody();
-        if(prepareResult == null || !prepareResult.dtmSuccess()){
-            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
-        }
+        HttpAsserts.isTrue(prepareResult != null && prepareResult.dtmSuccess(),
+                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
 
         // operate
-        log.info("DTM Tcc " + this.getGid() + " start transaction");
+        log.info("DTM Tcc " + this.getGid() + " register transaction");
         operator.accept(this);
 
         // submit
@@ -84,10 +83,10 @@ public class Tcc extends DtmTransaction {
             dtmService.abort(tccParam);
             throw new HttpException(submitResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " submit failed, " + submitResponse.getMessage());
         }
+
         DtmResult submitResult = submitResponse.getBody();
-        if (submitResult == null || !submitResult.dtmSuccess()) {
-            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
-        }
+        HttpAsserts.isTrue(submitResult != null && submitResult.dtmSuccess(),
+                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
 
         submitResult.setGid(this.getGid());
         return submitResult;
@@ -107,13 +106,12 @@ public class Tcc extends DtmTransaction {
 
         // register
         HttpResponse<DtmResult> registerResponse = dtmService.registerBranch(operatorParam);
-        if(registerResponse.isFailed()){
-            throw new HttpException(registerResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
-        }
+        HttpAsserts.isTrue(registerResponse.isSuccess(),
+                registerResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
+
         DtmResult registerResult = registerResponse.getBody();
-        if (registerResult == null || !registerResult.dtmSuccess()) {
-            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " branch register failed");
-        }
+        HttpAsserts.isTrue(registerResult != null && registerResult.dtmSuccess(),
+                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " branch register failed");
 
         // try
         Map<String, String> branchParam = new HashMap<>();
@@ -122,9 +120,9 @@ public class Tcc extends DtmTransaction {
         branchParam.put("op", "try");
         branchParam.put("trans_type", Type.TCC.getValue());
         HttpResponse<String> httpResponse = dtmService.businessPost(tryUrl, branchParam, requestBody);
-        if(httpResponse.getStatusCodeValue() >= 400){
-            throw new HttpException(httpResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
-        }
+
+        HttpAsserts.isTrue(httpResponse.getStatusCodeValue() < 400,
+                httpResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
         return httpResponse.getBody();
     }
 

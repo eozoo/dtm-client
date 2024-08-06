@@ -10,6 +10,7 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.DtmProperties;
 import com.cowave.commons.dtm.DtmResult;
+import com.cowave.commons.tools.HttpAsserts;
 import com.cowave.commons.tools.HttpException;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +67,7 @@ public class Saga extends DtmTransaction {
     /**
      * 添加step步骤
      */
-    public Saga step(String action, String compensate, Object data) throws HttpException {
+    public Saga step(String action, String compensate, Object data) {
         try {
             payloads.add(toJson(data));
         } catch (Exception e) {
@@ -79,19 +80,17 @@ public class Saga extends DtmTransaction {
     /**
      * 提交事务
      */
-    public DtmResult submit() throws HttpException {
+    public DtmResult submit() {
         if (StringUtils.isEmpty(this.getGid())) {
             HttpResponse<DtmResult> gidResponse = dtmService.newGid();
-            if(gidResponse.isFailed()){
-                throw new HttpException(gidResponse.getStatusCodeValue(), "DTM Saga acquire gid failed, " + gidResponse.getMessage());
-            }
+            HttpAsserts.isTrue(gidResponse.isSuccess(),
+                    gidResponse.getStatusCodeValue(), "DTM Saga acquire gid failed, " + gidResponse.getMessage());
 
             DtmResult gidResult = gidResponse.getBody();
-            if(gidResult != null && gidResult.dtmSuccess()){
-                this.setGid(gidResult.getGid());
-            }else{
-                throw new HttpException(DtmResult.CODE_FAILURE, "DTM Saga acquire gid failed");
-            }
+            HttpAsserts.isTrue(gidResult != null && gidResult.dtmSuccess(),
+                    DtmResult.CODE_FAILURE, "DTM Saga acquire gid failed");
+
+            this.setGid(gidResult.getGid());
         }
 
         addConcurrentContext();
@@ -109,13 +108,12 @@ public class Saga extends DtmTransaction {
         );
 
         HttpResponse<DtmResult> submitResponse = dtmService.submit(sagaParam);
-        if(submitResponse.isFailed()){
-            throw new HttpException(submitResponse.getStatusCodeValue(), "DTM Saga " + this.getGid() + " submit failed, " + submitResponse.getMessage());
-        }
+        HttpAsserts.isTrue(submitResponse.isSuccess(),
+                submitResponse.getStatusCodeValue(), "DTM Saga " + this.getGid() + " submit failed, " + submitResponse.getMessage());
+
         DtmResult submitResult = submitResponse.getBody();
-        if (submitResult == null || !submitResult.dtmSuccess()) {
-            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Saga " + this.getGid() + " submit failed");
-        }
+        HttpAsserts.isTrue(submitResult != null && submitResult.dtmSuccess(),
+                DtmResult.CODE_FAILURE, "DTM Saga " + this.getGid() + " submit failed");
 
         submitResult.setGid(this.getGid());
         return submitResult;
@@ -156,7 +154,7 @@ public class Saga extends DtmTransaction {
         return this;
     }
 
-    private void addConcurrentContext() throws HttpException {
+    private void addConcurrentContext() {
         if (concurrent) {
             Map<String, Object> data = Map.of(ORDERS, orders, CONCURRENT, true);
             try {
