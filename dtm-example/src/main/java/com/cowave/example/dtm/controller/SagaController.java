@@ -11,7 +11,7 @@ package com.cowave.example.dtm.controller;
 import com.cowave.commons.dtm.DtmClient;
 import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.impl.Saga;
-import com.cowave.commons.dtm.model.DtmResponse;
+import com.cowave.commons.dtm.DtmResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +26,10 @@ public class SagaController {
     private final DtmClient dtmClient;
 
     @RequestMapping("/saga")
-    public DtmResponse saga() throws DtmException {
+    public DtmResult saga() throws DtmException {
         Saga saga = dtmClient.saga(UUID.randomUUID().toString());
-        saga.add("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
-        saga.add("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
+        saga.step("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
+        saga.step("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
         saga.enableWaitResult();
         return saga.submit();
     }

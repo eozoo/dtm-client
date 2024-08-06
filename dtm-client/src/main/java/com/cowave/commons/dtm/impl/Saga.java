@@ -10,7 +10,7 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.DtmProperties;
-import com.cowave.commons.dtm.model.DtmResponse;
+import com.cowave.commons.dtm.DtmResult;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import com.cowave.commons.dtm.DtmService;
@@ -66,7 +66,7 @@ public class Saga extends DtmTransaction {
     /**
      * 添加step步骤
      */
-    public Saga add(String action, String compensate, Object data) throws DtmException {
+    public Saga step(String action, String compensate, Object data) throws DtmException {
         try {
             payloads.add(toJson(data));
         } catch (Exception e) {
@@ -79,14 +79,21 @@ public class Saga extends DtmTransaction {
     /**
      * 提交事务
      */
-    public DtmResponse submit() throws DtmException {
+    public DtmResult submit() throws DtmException {
         if (StringUtils.isEmpty(this.getGid())) {
-            HttpResponse<DtmResponse> gidResponse = dtmService.newGid();
+            HttpResponse<DtmResult> gidResponse = dtmService.newGid();
             if(gidResponse.isFailed()){
+                throw new DtmException("DTM Saga acquire gid failed, " + gidResponse.getMessage());
+            }
+
+            DtmResult gidResult = gidResponse.getBody();
+            if(gidResult != null && gidResult.dtmSuccess()){
+                this.setGid(gidResult.getGid());
+            }else{
                 throw new DtmException("DTM Saga acquire gid failed");
             }
-            this.setGid(parseGid(Objects.requireNonNull(gidResponse.getBody())));
         }
+
         addConcurrentContext();
         SagaParam sagaParam = new SagaParam(
                 this.getGid(),
@@ -101,13 +108,17 @@ public class Saga extends DtmTransaction {
                 this.getBranchHeaders()
         );
 
-        HttpResponse<DtmResponse> submitResponse = dtmService.submit(sagaParam);
+        HttpResponse<DtmResult> submitResponse = dtmService.submit(sagaParam);
         if(submitResponse.isFailed()){
             throw new DtmException("DTM Saga " + this.getGid() + " submit failed, " + submitResponse.getMessage());
         }
-        DtmResponse response = submitResponse.getBody();
-        response.setGid(this.getGid());
-        return response;
+        DtmResult submitResult = submitResponse.getBody();
+        if (submitResult == null || !submitResult.dtmSuccess()) {
+            throw new DtmException("DTM Saga " + this.getGid() + " submit failed");
+        }
+
+        submitResult.setGid(this.getGid());
+        return submitResult;
     }
 
     public Saga addBranchOrder(Integer branch, List<Integer> preBranches) {

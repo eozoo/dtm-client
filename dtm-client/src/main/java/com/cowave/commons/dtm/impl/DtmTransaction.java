@@ -8,9 +8,7 @@
  */
 package com.cowave.commons.dtm.impl;
 
-import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.DtmProperties;
-import com.cowave.commons.dtm.model.DtmResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,13 +40,6 @@ public class DtmTransaction {
     protected DtmProperties dtmProperties;
 
     private boolean waitResult;
-
-    public String parseGid(DtmResponse response) throws DtmException {
-        if(response == null || !"SUCCESS".equals(response.getDtmResult())){
-            throw new DtmException("fail to get gid from dtm server");
-        }
-        return response.getGid();
-    }
 
     public static <T> T parseJson(String json, Class<T> clzz) throws JsonProcessingException {
         return objectMapper.readValue(json, clzz);

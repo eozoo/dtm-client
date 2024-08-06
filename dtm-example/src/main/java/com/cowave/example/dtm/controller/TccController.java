@@ -10,7 +10,7 @@ package com.cowave.example.dtm.controller;
 
 import com.cowave.commons.dtm.DtmClient;
 import com.cowave.commons.dtm.impl.Tcc;
-import com.cowave.commons.dtm.model.DtmResponse;
+import com.cowave.commons.dtm.DtmResult;
 import com.cowave.example.dtm.model.TransReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,8 @@ public class TccController {
     private final DtmClient dtmClient;
 
     @RequestMapping("/tcc")
-    public DtmResponse tcc() throws Exception {
-        return dtmClient.tcc("", UUID.randomUUID().toString(), this::tccBranch);
+    public DtmResult tcc() throws Exception {
+        return dtmClient.tcc(UUID.randomUUID().toString(), this::tccBranch);
     }
 
     public void tccBranch(Tcc tcc) throws Exception {
@@ -49,8 +49,8 @@ public class TccController {
     }
 
     @RequestMapping("tcc/barrier")
-    public DtmResponse tccBarrier() throws Exception {
-        return dtmClient.tcc("", UUID.randomUUID().toString(), this::barrierBranch);
+    public DtmResult tccBarrier() throws Exception {
+        return dtmClient.tcc(UUID.randomUUID().toString(), this::barrierBranch);
     }
 
     public void barrierBranch(Tcc tcc) throws Exception {
@@ -70,8 +70,8 @@ public class TccController {
     }
 
     @RequestMapping("tcc/barrier/error")
-    public DtmResponse tccBarrierError() throws Exception {
-        return dtmClient.tcc("", UUID.randomUUID().toString(), TccController::barrierBranchError);
+    public DtmResult tccBarrierError() throws Exception {
+        return dtmClient.tcc(UUID.randomUUID().toString(), TccController::barrierBranchError);
     }
 
     public static void barrierBranchError(Tcc tcc) throws Exception {

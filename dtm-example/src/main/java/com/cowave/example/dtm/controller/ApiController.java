@@ -8,7 +8,7 @@
  */
 package com.cowave.example.dtm.controller;
 
-import com.cowave.commons.dtm.model.DtmResponse;
+import com.cowave.commons.dtm.DtmResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,26 +20,26 @@ public class ApiController {
 
     // saga
     @RequestMapping("TransOut")
-    public DtmResponse transOut() {
-        return DtmResponse.success();
+    public DtmResult transOut() {
+        return DtmResult.success();
     }
 
     // saga
     @RequestMapping("TransIn")
-    public DtmResponse transIn() {
-        return DtmResponse.success();
+    public DtmResult transIn() {
+        return DtmResult.success();
     }
 
     // saga
     @RequestMapping("TransOutCompensate")
-    public DtmResponse transOutCompensate() {
-        return DtmResponse.success();
+    public DtmResult transOutCompensate() {
+        return DtmResult.success();
     }
 
     // saga
     @RequestMapping("TransInCompensate")
-    public DtmResponse transInCompensate() {
-        return DtmResponse.success();
+    public DtmResult transInCompensate() {
+        return DtmResult.success();
     }
 
     // tcc
@@ -50,31 +50,31 @@ public class ApiController {
 
     // tcc
     @RequestMapping("TransOutConfirm")
-    public DtmResponse transOutConfirm() {
-        return DtmResponse.success();
+    public DtmResult transOutConfirm() {
+        return DtmResult.success();
     }
 
     // tcc
     @RequestMapping("TransOutCancel")
-    public DtmResponse transOutCancel() {
-        return DtmResponse.success();
+    public DtmResult transOutCancel() {
+        return DtmResult.success();
     }
 
     // tcc
     @RequestMapping("TransInTry")
-    public DtmResponse transInTry() {
-        return DtmResponse.success();
+    public DtmResult transInTry() {
+        return DtmResult.success();
     }
 
     // tcc
     @RequestMapping("TransInConfirm")
-    public DtmResponse transInConfirm() {
-        return DtmResponse.success();
+    public DtmResult transInConfirm() {
+        return DtmResult.success();
     }
 
     // tcc
     @RequestMapping("TransInCancel")
-    public DtmResponse transInCancel() {
-        return DtmResponse.success();
+    public DtmResult transInCancel() {
+        return DtmResult.success();
     }
 }

@@ -10,7 +10,6 @@ package com.cowave.commons.dtm;
 
 import com.cowave.commons.dtm.impl.Saga;
 import com.cowave.commons.dtm.impl.Tcc;
-import com.cowave.commons.dtm.model.DtmResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,16 +43,24 @@ public class DtmClient {
     /**
      * 创建tcc
      */
-    public DtmResponse tcc(String branchPrefix, DtmOperator<Tcc> function) throws Exception {
-        Tcc tcc = new Tcc(branchPrefix,null, dtmService, dtmProperties);
+    public DtmResult tcc(DtmOperator<Tcc> function) throws Exception {
+        Tcc tcc = new Tcc("",null, dtmService, dtmProperties);
         return tcc.prepare(function);
     }
 
     /**
      * 创建tcc，并指定gid
      */
-    public DtmResponse tcc(String branchPrefix, String gid, DtmOperator<Tcc> function) throws Exception {
-        Tcc tcc = new Tcc(branchPrefix, gid, dtmService, dtmProperties);
+    public DtmResult tcc(String gid, DtmOperator<Tcc> function) throws Exception {
+        Tcc tcc = new Tcc("", gid, dtmService, dtmProperties);
+        return tcc.prepare(function);
+    }
+
+    /**
+     * 创建tcc
+     */
+    public DtmResult tcc(String gid, DtmOperator<Tcc> function, String branchPrefix) throws Exception {
+        Tcc tcc = new Tcc(branchPrefix,null, dtmService, dtmProperties);
         return tcc.prepare(function);
     }
 }

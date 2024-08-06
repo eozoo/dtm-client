@@ -4,7 +4,7 @@
 
 - 提供了一些DTM事务的接入操作；
 
-#### 依赖
+### 依赖
 
 ```xml
 <dependency>
@@ -14,13 +14,22 @@
 </dependency>
 ```
 
+### DTM响应说明
+
+> 具体可以参考: com.cowave.commons.dtm.DtmResult
+
+- HTTP 200， SUCCESS 成功
+- HTTP 409， FAILURE 失败，不再重试
+- HTTP 425， ONGOING 进行中，固定间隔重试
+- HTTP 500， ERROR   异常，指数退避重试
+
 ### 使用示例
 
 > 具体示例参考: dtm-example
 
 #### 1. Saga
 
-> Saga将长事务拆分为多个step，由事务协调器协调，如果各个短事务都成功则正常完成；如果某个step失败，则根据相反顺序依次调用补偿操作；
+> Saga将事务拆分成多个step，submit之后由DTM来顺序执行step，如果某个step失败，DTM会根据相反顺序一次调用补偿操作；
 
 ```java
 @RequiredArgsConstructor
@@ -33,8 +42,8 @@ public class SagaController {
     @RequestMapping("/saga")
     public DtmResponse saga() throws DtmException {
         Saga saga = dtmClient.saga(UUID.randomUUID().toString());
-        saga.add("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
-        saga.add("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
+        saga.step("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
+        saga.step("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
         saga.enableWaitResult();
         return saga.submit();
     }
@@ -43,7 +52,7 @@ public class SagaController {
 
 #### 2. Tcc
 
-> Tcc将事务分为3个阶段: Try-Confirm-Cancel，所有分支事务都先执行Try操作，全部完成后再统一执行Confirm操作，如果某个操作分支失败了，则执行Cancel操作；
+> Tcc将事务拆分为多个branch，每个branch分成3个阶段: Try-Confirm-Cancel。注册之后由DTM统一执行所有branch的Try操作，全部成功则执行所有的Confirm操作，否则执行所有的Cancel操作； 
 
 ```java
 @Slf4j
@@ -56,7 +65,7 @@ public class TccController {
 
     @RequestMapping("tcc/barrier")
     public DtmResponse tccBarrier() throws Exception {
-        return dtmClient.tcc("", UUID.randomUUID().toString(), this::barrierBranch);
+        return dtmClient.tcc(UUID.randomUUID().toString(), this::barrierBranch);
     }
 
     public void barrierBranch(Tcc tcc) throws Exception {

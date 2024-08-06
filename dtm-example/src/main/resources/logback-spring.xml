@@ -88,5 +88,5 @@
     </springProfile>
 
     <logger name="org.apache.kafka" level="warn"/>
-    <logger name="com.cowave.commons.framework.access.AccessLogger" level="debug"/>
+    <logger name="com.cowave.commons.framework.access.AccessLogger" level="info"/>
 </configuration>
