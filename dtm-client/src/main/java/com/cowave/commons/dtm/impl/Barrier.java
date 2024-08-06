@@ -8,9 +8,9 @@
  */
 package com.cowave.commons.dtm.impl;
 
-import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.DtmOperator;
 import com.cowave.commons.dtm.DtmResult;
+import com.cowave.commons.tools.HttpException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -63,7 +63,7 @@ public class Barrier extends DtmTransaction {
                 connection.commit();
                 connection.setAutoCommit(true);
             }
-        } catch (DtmException e){
+        } catch (HttpException e){
             connection.rollback();
             connection.setAutoCommit(true);
             throw e;
@@ -72,7 +72,7 @@ public class Barrier extends DtmTransaction {
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new DtmException(DtmResult.CODE_ERROR, "DTM Barrier operate failed", e);
+            throw new HttpException(DtmResult.CODE_ERROR, "DTM Barrier operate failed", e);
         } finally {
             if(connection != null){
                 connection.close();

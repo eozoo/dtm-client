@@ -9,9 +9,9 @@
 package com.cowave.example.dtm.controller;
 
 import com.cowave.commons.dtm.DtmClient;
-import com.cowave.commons.dtm.DtmException;
 import com.cowave.commons.dtm.impl.Saga;
 import com.cowave.commons.dtm.DtmResult;
+import com.cowave.commons.tools.HttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +26,7 @@ public class SagaController {
     private final DtmClient dtmClient;
 
     @RequestMapping("/saga")
-    public DtmResult saga() throws DtmException {
+    public DtmResult saga() throws HttpException {
         Saga saga = dtmClient.saga(UUID.randomUUID().toString());
         saga.step("http://localhost:8081/api/TransOut", "http://localhost:8081/api/TransOutCompensate", "");
         saga.step("http://localhost:8081/api/TransIn", "http://localhost:8081/api/TransInCompensate", "");
