@@ -71,11 +71,13 @@ public class Tcc extends DtmTransaction {
 
         DtmResult prepareResult = prepareResponse.getBody();
         HttpAsserts.isTrue(prepareResult != null && prepareResult.dtmSuccess(),
-                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
+                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " prepare failed");
 
         // operate
+        if(!operator.accept(this)){
+            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " register failed");
+        }
         log.info("DTM Tcc " + this.getGid() + " register transaction");
-        operator.accept(this);
 
         // submit
         HttpResponse<DtmResult> submitResponse = dtmService.submit(tccParam);

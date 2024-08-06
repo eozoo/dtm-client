@@ -11,7 +11,6 @@ package com.cowave.example.dtm.controller;
 import com.cowave.commons.dtm.impl.Barrier;
 import com.cowave.commons.dtm.impl.BarrierParam;
 import com.cowave.commons.dtm.DtmResult;
-import com.cowave.commons.tools.Asserts;
 import com.cowave.example.dtm.model.TransReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,28 +75,36 @@ public class ApiBarrierController {
         return DtmResult.httpSuccess();
     }
 
-    private void transOutPrepare(TransReq transReq) {
+    private boolean transOutPrepare(TransReq transReq) {
         log.info("user[{}] 转出准备 {}", transReq.getUserId(), transReq.getAmount());
+        return true;
     }
 
-    public void transOutSubmit(TransReq transReq) {
+    public boolean transOutSubmit(TransReq transReq) {
         log.info("user[{}] 转出提交 {}", transReq.getUserId(), transReq.getAmount());
+        return true;
     }
 
-    public void transOutCancel(TransReq transReq) {
+    public boolean transOutCancel(TransReq transReq) {
         log.info("user[{}] 转出回滚 {}", transReq.getUserId(), transReq.getAmount());
+        return true;
     }
 
-    private void transInPrepare(TransReq transReq) {
+    private boolean transInPrepare(TransReq transReq) {
         log.info("user[{}] 转入准备 {}", transReq.getUserId(), transReq.getAmount());
+        return true;
     }
 
-    private void transInSubmit(TransReq transReq) {
-        Asserts.isTrue(transReq.getAmount() <= 1000, "金额过大");
+    private boolean transInSubmit(TransReq transReq) {
         log.info("user[{}] 转入提交 {}", transReq.getUserId(), transReq.getAmount());
+        if(transReq.getAmount() > 1000){
+            return false;
+        }
+        return true;
     }
 
-    private void transInCancel(TransReq transReq) {
+    private boolean transInCancel(TransReq transReq) {
         log.info("user[{}] 转入回滚 {}", transReq.getUserId(), transReq.getAmount());
+        return true;
     }
 }

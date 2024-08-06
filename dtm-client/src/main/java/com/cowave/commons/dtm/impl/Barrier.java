@@ -59,13 +59,17 @@ public class Barrier extends DtmTransaction {
             connection.setAutoCommit(false);
             boolean barrierResult = insertBarrier(connection, barrierId, getTransactionType().getValue(), getGid(), branchId, op);
             if (barrierResult) {
-                operator.accept(this);
+                if(!operator.accept(this)){
+                    throw new HttpException(DtmResult.CODE_FAILURE, "DTM Barrier operate failed");
+                }
                 connection.commit();
                 connection.setAutoCommit(true);
             }
         } catch (HttpException e){
-            connection.rollback();
-            connection.setAutoCommit(true);
+            if(connection != null){
+                connection.rollback();
+                connection.setAutoCommit(true);
+            }
             throw e;
         } catch (Exception e) {
             if(connection != null){

@@ -32,7 +32,7 @@ public class TccController {
         return dtmClient.tcc(UUID.randomUUID().toString(), this::tccBranch);
     }
 
-    public void tccBranch(Tcc tcc) throws Exception {
+    public boolean tccBranch(Tcc tcc) throws Exception {
         String outResponse = tcc.branch(
                 "http://localhost:8081/api/TransOutTry",
                 "http://localhost:8081/api/TransOutConfirm",
@@ -46,6 +46,7 @@ public class TccController {
                 "http://localhost:8081/api/TransInCancel",
                 "");
         log.info("tcc branch in: " + inResponse);
+        return false;
     }
 
     @RequestMapping("tcc/barrier")
@@ -53,7 +54,7 @@ public class TccController {
         return dtmClient.tcc(UUID.randomUUID().toString(), this::barrierBranch);
     }
 
-    public void barrierBranch(Tcc tcc) throws Exception {
+    public boolean barrierBranch(Tcc tcc) throws Exception {
         String outResponse = tcc.branch(
                 "http://localhost:8081/api/barrierTransOutTry",
                 "http://localhost:8081/api/barrierTransOutConfirm",
@@ -67,14 +68,15 @@ public class TccController {
                 "http://localhost:8081/api/barrierTransInCancel",
                 new TransReq(2, 30));
         log.info("tcc branch in: " + inResponse);
+        return true;
     }
 
     @RequestMapping("tcc/barrier/error")
     public DtmResult tccBarrierError() throws Exception {
-        return dtmClient.tcc(UUID.randomUUID().toString(), TccController::barrierBranchError);
+        return dtmClient.tcc(UUID.randomUUID().toString(), this::barrierBranchError);
     }
 
-    public static void barrierBranchError(Tcc tcc) throws Exception {
+    public boolean barrierBranchError(Tcc tcc) throws Exception {
         String outResponse = tcc.branch(
                 "http://localhost:8081/api/barrierTransOutTry",
                 "http://localhost:8081/api/barrierTransOutConfirm",
@@ -88,5 +90,6 @@ public class TccController {
                 "http://localhost:8081/api/barrierTransInCancel",
                 new TransReq(2, 100000));
         log.info("tcc branch in: " + inResponse);
+        return true;
     }
 }

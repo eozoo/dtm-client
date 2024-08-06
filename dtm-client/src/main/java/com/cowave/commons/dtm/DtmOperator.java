@@ -18,5 +18,5 @@ import com.cowave.commons.dtm.impl.DtmTransaction;
 @FunctionalInterface
 public interface DtmOperator<T extends DtmTransaction> {
 
-    void accept(T t) throws Exception;
+    boolean accept(T t) throws Exception;
 }
