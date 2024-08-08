@@ -60,7 +60,7 @@ public class Barrier extends DtmTransaction {
             boolean barrierResult = insertBarrier(connection, barrierId, getTransactionType().getValue(), getGid(), branchId, op);
             if (barrierResult) {
                 if(!operator.accept(this)){
-                    throw new HttpException(DtmResult.CODE_FAILURE, "DTM Barrier operate failed");
+                    throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Barrier operate failed");
                 }
                 connection.commit();
                 connection.setAutoCommit(true);
@@ -76,7 +76,7 @@ public class Barrier extends DtmTransaction {
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new HttpException(DtmResult.CODE_ERROR, "DTM Barrier operate failed", e);
+            throw new HttpException(DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed", e);
         } finally {
             if(connection != null){
                 connection.close();

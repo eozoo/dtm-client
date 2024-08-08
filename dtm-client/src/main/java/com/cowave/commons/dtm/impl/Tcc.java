@@ -54,11 +54,11 @@ public class Tcc extends DtmTransaction {
         if (StringUtils.isEmpty(this.getGid())) {
             HttpResponse<DtmResult> gidResponse = dtmService.newGid();
             HttpAsserts.isTrue(gidResponse.isSuccess(),
-                    gidResponse.getStatusCodeValue(), "DTM Tcc acquire gid failed, " + gidResponse.getMessage());
+                    gidResponse.getStatusCodeValue(), DtmResult.ERROR, "DTM Tcc acquire gid failed, " + gidResponse.getMessage());
 
             DtmResult gidResult = gidResponse.getBody();
             HttpAsserts.isTrue(gidResult != null && gidResult.dtmSuccess(),
-                    DtmResult.CODE_FAILURE, "DTM Tcc acquire gid failed");
+                    DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Tcc acquire gid failed");
 
             this.setGid(gidResult.getGid());
         }
@@ -67,15 +67,15 @@ public class Tcc extends DtmTransaction {
         DtmParam tccParam = new DtmParam(this.getGid(), Type.TCC);
         HttpResponse<DtmResult> prepareResponse = dtmService.prepare(tccParam);
         HttpAsserts.isTrue(prepareResponse.isSuccess(),
-                prepareResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
+                prepareResponse.getStatusCodeValue(), DtmResult.ERROR, "DTM Tcc " + this.getGid() + " prepare failed, " + prepareResponse.getMessage());
 
         DtmResult prepareResult = prepareResponse.getBody();
         HttpAsserts.isTrue(prepareResult != null && prepareResult.dtmSuccess(),
-                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " prepare failed");
+                DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Tcc " + this.getGid() + " prepare failed");
 
         // operate
         if(!operator.accept(this)){
-            throw new HttpException(DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " register failed");
+            throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Tcc " + this.getGid() + " register failed");
         }
         log.info("DTM Tcc " + this.getGid() + " register transaction");
 
@@ -83,12 +83,12 @@ public class Tcc extends DtmTransaction {
         HttpResponse<DtmResult> submitResponse = dtmService.submit(tccParam);
         if(submitResponse.isFailed()){
             dtmService.abort(tccParam);
-            throw new HttpException(submitResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " submit failed, " + submitResponse.getMessage());
+            throw new HttpException(submitResponse.getStatusCodeValue(), DtmResult.ERROR, "DTM Tcc " + this.getGid() + " submit failed, " + submitResponse.getMessage());
         }
 
         DtmResult submitResult = submitResponse.getBody();
         HttpAsserts.isTrue(submitResult != null && submitResult.dtmSuccess(),
-                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
+                DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Tcc " + this.getGid() + " submit failed");
 
         submitResult.setGid(this.getGid());
         return submitResult;
@@ -109,11 +109,11 @@ public class Tcc extends DtmTransaction {
         // register
         HttpResponse<DtmResult> registerResponse = dtmService.registerBranch(operatorParam);
         HttpAsserts.isTrue(registerResponse.isSuccess(),
-                registerResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
+                registerResponse.getStatusCodeValue(), DtmResult.ERROR, "DTM Tcc " + this.getGid() + " branch register failed, " + registerResponse.getMessage());
 
         DtmResult registerResult = registerResponse.getBody();
         HttpAsserts.isTrue(registerResult != null && registerResult.dtmSuccess(),
-                DtmResult.CODE_FAILURE, "DTM Tcc " + this.getGid() + " branch register failed");
+                DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Tcc " + this.getGid() + " branch register failed");
 
         // try
         Map<String, String> branchParam = new HashMap<>();
@@ -124,7 +124,7 @@ public class Tcc extends DtmTransaction {
         HttpResponse<String> httpResponse = dtmService.businessPost(tryUrl, branchParam, requestBody);
 
         HttpAsserts.isTrue(httpResponse.getStatusCodeValue() < 400,
-                httpResponse.getStatusCodeValue(), "DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
+                httpResponse.getStatusCodeValue(), DtmResult.ERROR, "DTM Tcc " + this.getGid() + " branch try failed, " + httpResponse.getMessage());
         return httpResponse.getBody();
     }
 
