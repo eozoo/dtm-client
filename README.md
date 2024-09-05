@@ -89,7 +89,7 @@ public class TccController {
 }
 ```
 
-#### 2. Barrier
+#### 3. Barrier
 
 ```java 
 @Slf4j
