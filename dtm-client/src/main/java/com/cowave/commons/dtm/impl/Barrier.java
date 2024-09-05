@@ -22,6 +22,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Objects;
 
+import static com.cowave.commons.dtm.impl.DtmTransaction.Type.SAGA;
+import static com.cowave.commons.dtm.impl.DtmTransaction.Type.TCC;
+
 /**
  *
  * @author shanhuiming
@@ -98,9 +101,17 @@ public class Barrier extends DtmTransaction {
             if (preparedStatement.executeUpdate() == 0) {
                 return false;
             }
+
             // 执行cancel，必须要先执行过try
             if ("cancel".equals(op)) {
-                preparedStatement.setString(4, "try");
+                if(transactionType.equals(TCC)){
+                    preparedStatement.setString(4, "try");
+                }else if(transactionType.equals(SAGA)){
+                    preparedStatement.setString(4, "compensate");
+                }else{
+                    preparedStatement.setString(4, "rollback");
+                }
+                // 插入成功肯定未执行过
                 if (preparedStatement.executeUpdate() > 0) {
                     return false;
                 }

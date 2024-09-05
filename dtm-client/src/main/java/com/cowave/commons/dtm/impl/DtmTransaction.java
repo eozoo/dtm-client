@@ -33,13 +33,13 @@ public class DtmTransaction {
     private static final ObjectMapper objectMapper =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private String gid;
+    protected String gid;
 
-    private Type transactionType;
+    protected Type transactionType;
 
     protected DtmProperties dtmProperties;
 
-    private boolean waitResult;
+    protected boolean waitResult;
 
     public static <T> T parseJson(String json, Class<T> clzz) throws JsonProcessingException {
         return objectMapper.readValue(json, clzz);
