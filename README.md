@@ -10,7 +10,7 @@
 <dependency>
     <groupId>com.cowave.commons</groupId>
     <artifactId>dtm-client</artifactId>
-    <version>3.0.0</version>
+    <version>2.8.0</version>
 </dependency>
 ```
 
