@@ -23,13 +23,18 @@
 - HTTP 425， ONGOING 进行中，固定间隔重试
 - HTTP 500， ERROR   异常，指数退避重试
 
+> Saga将事务拆分成多个step，submit之后由DTM来顺序执行step，如果某个step失败，DTM会根据相反顺序一次调用补偿操作；
+
+> Tcc将事务拆分为多个branch，每个branch分成3个阶段: Try-Confirm-Cancel。注册之后由DTM统一执行所有branch的Try操作，全部成功则执行所有的Confirm操作，否则执行所有的Cancel操作；
+
+> 针对补偿或取消操作，为了防止重复执行等问题，引入了Barrier，就是通过记录比较一些标识信息来避免重复或空悬问题；
+> Barrier默认是往一张表dtm_barrier(mysql语法)中记录信息，如果使用自定义的表，可以覆盖下方法: Barrier.insertBarrier；
+
 ### 使用示例
 
 > 具体示例参考: dtm-example
 
 #### 1. Saga
-
-> Saga将事务拆分成多个step，submit之后由DTM来顺序执行step，如果某个step失败，DTM会根据相反顺序一次调用补偿操作；
 
 ```java
 @RequiredArgsConstructor
@@ -51,8 +56,6 @@ public class SagaController {
 ```
 
 #### 2. Tcc
-
-> Tcc将事务拆分为多个branch，每个branch分成3个阶段: Try-Confirm-Cancel。注册之后由DTM统一执行所有branch的Try操作，全部成功则执行所有的Confirm操作，否则执行所有的Cancel操作； 
 
 ```java
 @Slf4j
@@ -86,9 +89,7 @@ public class TccController {
 }
 ```
 
-> 针对补偿或取消操作，为了防止重复执行等问题，引入了Barrier，就是通过记录比较一些标识信息来避免重复或空悬问题；
-
-> Barrier默认是往一张表dtm_barrier(mysql语法)中记录信息，如果使用自定义的表，可以覆盖下方法: Barrier.insertBarrier；
+#### 2. Barrier
 
 ```java 
 @Slf4j
