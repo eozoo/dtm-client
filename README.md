@@ -14,7 +14,7 @@
 </dependency>
 ```
 
-### 依赖
+### 配置
 
 ```yaml
 spring:
