@@ -17,7 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  */
 @Data
-@ConfigurationProperties(prefix = "spring.application.dtm")
+@ConfigurationProperties(prefix = "spring.dtm")
 public class DtmProperties {
 
     private String address;

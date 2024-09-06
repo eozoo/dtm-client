@@ -14,6 +14,14 @@
 </dependency>
 ```
 
+### 依赖
+
+```yaml
+spring:
+  dtm:
+    address: http://localhost:36789
+```
+
 ### DTM响应说明
 
 > 具体可以参考: com.cowave.commons.dtm.DtmResult
