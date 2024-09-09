@@ -21,7 +21,7 @@ import java.util.Map;
  * @author shanhuiming
  *
  */
-@FeignClient(url = "${spring.application.dtm.address}")
+@FeignClient(url = "${spring.dtm.address}")
 public interface DtmService {
 
     @RequestLine("GET /api/dtmsvr/newGid")
