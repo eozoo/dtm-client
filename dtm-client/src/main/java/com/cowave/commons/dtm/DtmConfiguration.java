@@ -17,14 +17,10 @@ import org.springframework.context.annotation.Bean;
  *
  * @author shanhuiming
  */
-@RequiredArgsConstructor
-@EnableConfigurationProperties(DtmProperties.class)
 public class DtmConfiguration {
-
-    private final DtmProperties dtmProperties;
 
     @Bean
     public DtmClient dtmClient(DtmService dtmService){
-        return new DtmClient(dtmService, dtmProperties);
+        return new DtmClient(dtmService);
     }
 }

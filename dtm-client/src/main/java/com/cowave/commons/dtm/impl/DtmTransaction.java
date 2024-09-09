@@ -8,7 +8,6 @@
  */
 package com.cowave.commons.dtm.impl;
 
-import com.cowave.commons.dtm.DtmProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +35,6 @@ public class DtmTransaction {
     protected String gid;
 
     protected Type transactionType;
-
-    protected DtmProperties dtmProperties;
 
     protected boolean waitResult;
 

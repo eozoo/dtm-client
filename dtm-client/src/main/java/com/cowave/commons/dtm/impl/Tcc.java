@@ -37,8 +37,8 @@ public class Tcc extends DtmTransaction {
 
     private DtmService dtmService;
 
-    public Tcc(String branchPrefix, String gid, DtmService dtmService, DtmProperties dtmProperties) {
-        super(gid, Type.TCC, dtmProperties, false);
+    public Tcc(String branchPrefix, String gid, DtmService dtmService) {
+        super(gid, Type.TCC, false);
         this.dtmService = dtmService;
         this.branchPrefix = branchPrefix;
         if(StringUtils.isBlank(branchPrefix)){

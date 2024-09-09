@@ -8,7 +8,6 @@
  */
 package com.cowave.commons.dtm.impl;
 
-import com.cowave.commons.dtm.DtmProperties;
 import com.cowave.commons.dtm.DtmResult;
 import com.cowave.commons.tools.HttpAsserts;
 import com.cowave.commons.tools.HttpException;
@@ -57,8 +56,8 @@ public class Saga extends DtmTransaction {
 
     private DtmService dtmService;
 
-    public Saga(String gid, DtmService dtmService, DtmProperties dtmProperties) {
-        super(gid, Type.SAGA, dtmProperties, false);
+    public Saga(String gid, DtmService dtmService) {
+        super(gid, Type.SAGA, false);
         this.concurrent = false;
         this.dtmService = dtmService;
         this.orders = new HashMap<>();

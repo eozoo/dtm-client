@@ -24,27 +24,25 @@ public class DtmClient {
 
     private final DtmService dtmService;
 
-    private final DtmProperties dtmProperties;
-
     /**
      * 创建saga
      */
     public Saga saga() {
-        return new Saga(null, dtmService, dtmProperties);
+        return new Saga(null, dtmService);
     }
 
     /**
      * 创建saga，并指定gid
      */
     public Saga saga(String gid) {
-        return new Saga(gid, dtmService, dtmProperties);
+        return new Saga(gid, dtmService);
     }
 
     /**
      * 创建tcc
      */
     public DtmResult tcc(DtmOperator<Tcc> function) throws Exception {
-        Tcc tcc = new Tcc("",null, dtmService, dtmProperties);
+        Tcc tcc = new Tcc("",null, dtmService);
         return tcc.prepare(function);
     }
 
@@ -52,7 +50,7 @@ public class DtmClient {
      * 创建tcc，并指定gid
      */
     public DtmResult tcc(String gid, DtmOperator<Tcc> function) throws Exception {
-        Tcc tcc = new Tcc("", gid, dtmService, dtmProperties);
+        Tcc tcc = new Tcc("", gid, dtmService);
         return tcc.prepare(function);
     }
 
@@ -60,7 +58,7 @@ public class DtmClient {
      * 创建tcc
      */
     public DtmResult tcc(String gid, DtmOperator<Tcc> function, String branchPrefix) throws Exception {
-        Tcc tcc = new Tcc(branchPrefix,null, dtmService, dtmProperties);
+        Tcc tcc = new Tcc(branchPrefix,null, dtmService);
         return tcc.prepare(function);
     }
 }
