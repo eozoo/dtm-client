@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>com.cowave.commons</groupId>
-            <artifactId>tools</artifactId>
+            <artifactId>commons-tools</artifactId>
         </dependency>
         <dependency>
             <groupId>com.cowave.commons</groupId>
