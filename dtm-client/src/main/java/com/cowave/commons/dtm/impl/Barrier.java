@@ -79,7 +79,7 @@ public class Barrier extends DtmTransaction {
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new HttpException(DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed", e);
+            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
         } finally {
             if(connection != null){
                 connection.close();

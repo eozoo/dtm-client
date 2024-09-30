@@ -70,7 +70,7 @@ public class Saga extends DtmTransaction {
         try {
             payloads.add(toJson(data));
         } catch (Exception e) {
-            throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga add step failed", e);
+            throw new HttpException(e, DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga add step failed");
         }
         steps.add(Map.of("action", action, "compensate", compensate));
         return this;
@@ -159,7 +159,7 @@ public class Saga extends DtmTransaction {
             try {
                 this.customData = toJson(data);
             } catch (Exception e) {
-                throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga " + this.getGid() + " submit failed", e);
+                throw new HttpException(e, DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga " + this.getGid() + " submit failed");
             }
         }
     }
