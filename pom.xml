@@ -13,6 +13,10 @@
     <version>2.8.2</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <skip.pmd>true</skip.pmd>
+    </properties>
+
     <modules>
         <module>dtm-client</module>
         <module>dtm-example</module>
@@ -32,17 +36,4 @@
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <failurePriority>1</failurePriority>
-                    <failOnViolation>false</failOnViolation>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
