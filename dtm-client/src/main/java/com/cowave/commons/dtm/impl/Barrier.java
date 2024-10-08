@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Objects;
@@ -44,47 +43,46 @@ public class Barrier extends DtmTransaction {
 
     private String branchId;
 
-    private DataSource dataSource;
+    private Connection connection;
 
-    public Barrier(@Nonnull BarrierParam param, @Nonnull DataSource dataSource) {
+    public Barrier(@Nonnull BarrierParam param, @Nonnull Connection connection) {
         this.setGid(param.getGid());
         this.setTransactionType(Type.parse(param.getTrans_type()));
         this.op = param.getOp();
         this.branchId = param.getBranch_id();
-        this.dataSource = dataSource;
+        this.connection = connection;
     }
 
     public void call(DtmOperator<Barrier> operator) throws Exception {
         ++this.barrierId;
-        Connection connection = null;
         try{
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
+//            connection.setAutoCommit(false);
             boolean barrierResult = insertBarrier(connection, barrierId, getTransactionType().getValue(), getGid(), branchId, op);
             if (barrierResult) {
                 if(!operator.accept(this)){
                     throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Barrier operate failed");
                 }
-                connection.commit();
-                connection.setAutoCommit(true);
+//                connection.commit();
+//                connection.setAutoCommit(true);
             }
         } catch (HttpException e){
-            if(connection != null){
-                connection.rollback();
-                connection.setAutoCommit(true);
-            }
+//            if(connection != null){
+//                connection.rollback();
+//                connection.setAutoCommit(true);
+//            }
             throw e;
         } catch (Exception e) {
-            if(connection != null){
-                connection.rollback();
-                connection.setAutoCommit(true);
-            }
+//            if(connection != null){
+//                connection.rollback();
+//                connection.setAutoCommit(true);
+//            }
             throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
+//        finally {
+//            if(connection != null){
+//                connection.close();
+//            }
+//        }
     }
 
     protected boolean insertBarrier(Connection connection, int barrierId, String type, String gid, String branchId, String op) throws Exception {
