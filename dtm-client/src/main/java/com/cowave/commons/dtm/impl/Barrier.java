@@ -64,7 +64,8 @@ public class Barrier extends DtmTransaction {
                 }
                 connection.commit();
                 connection.setAutoCommit(true);
-
+            }else{
+                log.warn("Dtm skipped, gid=" + getGid() + ", op=" + op + ", branchId=" + branchId);
             }
         } catch (HttpException e) {
             if (connection != null) {
@@ -93,6 +94,8 @@ public class Barrier extends DtmTransaction {
                 if(!operator.accept(this)){
                     throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Barrier operate failed");
                 }
+            }else{
+                log.warn("Dtm skipped, gid=" + getGid() + ", op=" + op + ", branchId=" + branchId);
             }
         } catch (HttpException e){
             throw e;
@@ -112,6 +115,8 @@ public class Barrier extends DtmTransaction {
                 }
                 connection.commit();
                 connection.setAutoCommit(true);
+            }else{
+                log.warn("Dtm skipped, gid=" + getGid() + ", op=" + op + ", branchId=" + branchId);
             }
         } catch (HttpException e){
             connection.rollback();
