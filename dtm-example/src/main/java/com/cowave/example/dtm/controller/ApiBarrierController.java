@@ -15,7 +15,6 @@ import com.cowave.example.dtm.model.TransReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.feign.codec.HttpResponse;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,38 +30,34 @@ public class ApiBarrierController {
     private final DataSource dataSource;
 
     @RequestMapping("barrierTransOutTry")
-    public HttpResponse<DtmResult> transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam);
-        branchBarrier.call((barrier) -> this.transOutPrepare(transReq), DataSourceUtils.getConnection(dataSource));
+    public HttpResponse<DtmResult> transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        new Barrier(barrierParam).call((barrier) -> this.transOutPrepare(transReq), dataSource);
         return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransOutConfirm")
-    public HttpResponse<DtmResult> transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam);
-        branchBarrier.call((barrier) -> this.transOutSubmit(transReq), DataSourceUtils.getConnection(dataSource));
+    public HttpResponse<DtmResult> transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        new Barrier(barrierParam).call((barrier) -> this.transOutSubmit(transReq), dataSource);
         return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransOutCancel")
-    public HttpResponse<DtmResult> transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam);
-        branchBarrier.call((barrier) -> this.transOutCancel(transReq), DataSourceUtils.getConnection(dataSource));
+    public HttpResponse<DtmResult> transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        new Barrier(barrierParam).call((barrier) -> this.transOutCancel(transReq), dataSource);
         return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransInTry")
-    public HttpResponse<DtmResult> transInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) {
+    public HttpResponse<DtmResult> transInTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
         Barrier branchBarrier = new Barrier(barrierParam);
-        branchBarrier.call((barrier) -> this.transInPrepare(transReq), DataSourceUtils.getConnection(dataSource));
+        branchBarrier.call((barrier) -> this.transInPrepare(transReq), dataSource);
         return DtmResult.httpSuccess();
     }
 
     @RequestMapping("barrierTransInConfirm")
     public HttpResponse<DtmResult> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam);
         try{
-            branchBarrier.call((barrier) -> this.transInSubmit(transReq), DataSourceUtils.getConnection(dataSource));
+            new Barrier(barrierParam).call((barrier) -> this.transInSubmit(transReq), dataSource);
         }catch (Exception e){
             return DtmResult.httpFailure(); // 不再重试
         }
@@ -70,9 +65,8 @@ public class ApiBarrierController {
     }
 
     @RequestMapping("barrierTransInCancel")
-    public HttpResponse<DtmResult> transInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam);
-        branchBarrier.call((barrier) -> this.transInCancel(transReq), DataSourceUtils.getConnection(dataSource));
+    public HttpResponse<DtmResult> transInCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
+        new Barrier(barrierParam).call((barrier) -> this.transInCancel(transReq), dataSource);
         return DtmResult.httpSuccess();
     }
 

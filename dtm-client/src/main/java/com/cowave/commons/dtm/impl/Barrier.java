@@ -86,25 +86,7 @@ public class Barrier extends DtmTransaction {
         }
     }
 
-    public void call(DtmOperator<Barrier> operator, Connection connection) {
-        ++this.barrierId;
-        try{
-            boolean barrierResult = insertBarrier(connection, barrierId, getTransactionType().getValue(), getGid(), branchId, op);
-            if (barrierResult) {
-                if(!operator.accept(this)){
-                    throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Barrier operate failed");
-                }
-            }else{
-                log.warn("Dtm skipped, gid=" + getGid() + ", op=" + op + ", branchId=" + branchId);
-            }
-        } catch (HttpException e){
-            throw e;
-        } catch (Exception e) {
-            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
-        }
-    }
-
-    public void callAndClose(DtmOperator<Barrier> operator, Connection connection) throws Exception {
+    public void call(DtmOperator<Barrier> operator, Connection connection) throws Exception {
         ++this.barrierId;
         try{
             connection.setAutoCommit(false);
@@ -132,6 +114,24 @@ public class Barrier extends DtmTransaction {
             if(connection != null){
                 connection.close();
             }
+        }
+    }
+
+    public void callInTransaction(DtmOperator<Barrier> operator, Connection connection) {
+        ++this.barrierId;
+        try{
+            boolean barrierResult = insertBarrier(connection, barrierId, getTransactionType().getValue(), getGid(), branchId, op);
+            if (barrierResult) {
+                if(!operator.accept(this)){
+                    throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Barrier operate failed");
+                }
+            }else{
+                log.warn("Dtm skipped, gid=" + getGid() + ", op=" + op + ", branchId=" + branchId);
+            }
+        } catch (HttpException e){
+            throw e;
+        } catch (Exception e) {
+            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
         }
     }
 

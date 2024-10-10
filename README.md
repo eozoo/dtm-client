@@ -110,22 +110,19 @@ public class ApiBarrierController {
 
     @RequestMapping("barrierTransOutTry")
     public DtmResponse transOutTry(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
-        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
-        branchBarrier.call((barrier) -> this.transOutPrepare(transReq));
+        new Barrier(barrierParam).call((barrier) -> this.transOutPrepare(transReq), dataSource);
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransOutConfirm")
     public Object transOutConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
-        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
-        branchBarrier.call((barrier) -> this.transOutSubmit(transReq));
+        new Barrier(barrierParam).call((barrier) -> this.transOutSubmit(transReq), dataSource);
         return DtmResponse.success();
     }
 
     @RequestMapping("barrierTransOutCancel")
     public Object transOutCancel(BarrierParam barrierParam, @RequestBody TransReq transReq) throws Exception {
-        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
-        branchBarrier.call((barrier) -> this.transOutCancel(transReq));
+        new Barrier(barrierParam).call((barrier) -> this.transOutCancel(transReq), dataSource);
         return DtmResponse.success();
     }
 
@@ -133,11 +130,10 @@ public class ApiBarrierController {
 
     @RequestMapping("barrierTransInConfirm")
     public HttpResponse<String> transInConfirm(BarrierParam barrierParam, @RequestBody TransReq transReq) {
-        Barrier branchBarrier = new Barrier(barrierParam, dataSource);
-        try {
-            branchBarrier.call((barrier) -> this.transInSubmit(transReq));
-        } catch (Exception e) {
-            return new HttpResponse<>(409, null, null);
+        try{
+            new Barrier(barrierParam).call((barrier) -> this.transInSubmit(transReq), dataSource);
+        }catch (Exception e){
+            return DtmResult.httpFailure(); // 不再重试
         }
         return HttpResponse.success();
     }
