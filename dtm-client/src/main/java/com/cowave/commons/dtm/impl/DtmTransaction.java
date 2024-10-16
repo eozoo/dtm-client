@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ * Copyright (c) 2017～2024 Cowave All Rights Reserved.
  *
- * For licensing information, please contact: https://www.cowave.com.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
- * This code is proprietary and confidential.
- * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.commons.dtm.impl;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class DtmTransaction {
 
-    private static final ObjectMapper objectMapper =
+    private static final ObjectMapper OBJECT_MAPPER =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     protected String gid;
@@ -39,15 +40,15 @@ public class DtmTransaction {
     protected boolean waitResult;
 
     public static <T> T parseJson(String json, Class<T> clzz) throws JsonProcessingException {
-        return objectMapper.readValue(json, clzz);
+        return OBJECT_MAPPER.readValue(json, clzz);
     }
 
     public static <T> T parseJson(byte[] bytes, Class<T> clzz) throws IOException {
-        return objectMapper.readValue(bytes, clzz);
+        return OBJECT_MAPPER.readValue(bytes, clzz);
     }
 
     public static String toJson(Object object) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(object);
+        return OBJECT_MAPPER.writeValueAsString(object);
     }
 
     public enum Type {

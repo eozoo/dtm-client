@@ -1,16 +1,7 @@
-### eclipse
-/.settings/
-.project
-.classpath
-
-### idea
-/.idea/
+target/
+.idea/
 *.iml
 
-### maven
-.checkstyle
-target/
-bin/
 log/
 
-changelog.md
+

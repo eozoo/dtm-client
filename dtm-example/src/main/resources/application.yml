@@ -9,4 +9,3 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   dtm:
     address: http://localhost:36789
-
