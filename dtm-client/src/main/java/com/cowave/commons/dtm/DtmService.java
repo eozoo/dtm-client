@@ -22,7 +22,7 @@ import java.util.Map;
  * @author shanhuiming
  *
  */
-@FeignClient(url = "${spring.dtm.address}")
+@FeignClient(url = "${spring.dtm.address}", readTimeoutMillisStr = "${spring.dtm.readTimeout:10000}", connectTimeoutMillisStr = "${spring.dtm.connectTimeout:60000}")
 public interface DtmService {
 
     @RequestLine("GET /api/dtmsvr/newGid")
