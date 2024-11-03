@@ -10,8 +10,8 @@
 package com.cowave.example.dtm.controller;
 
 import com.cowave.commons.dtm.DtmResult;
+import com.cowave.commons.response.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.feign.codec.HttpResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

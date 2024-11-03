@@ -10,15 +10,15 @@
 package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.DtmResult;
-import com.cowave.commons.tools.HttpAsserts;
-import com.cowave.commons.tools.HttpException;
+import com.cowave.commons.response.HttpResponse;
+import com.cowave.commons.response.exception.HttpAsserts;
+import com.cowave.commons.response.exception.HttpException;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import com.cowave.commons.dtm.DtmService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.feign.codec.HttpResponse;
 
 import java.util.*;
 
@@ -71,7 +71,7 @@ public class Saga extends DtmTransaction {
         try {
             payloads.add(toJson(data));
         } catch (Exception e) {
-            throw new HttpException(e, DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga add step failed");
+            throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, e, "DTM Saga add step failed");
         }
         steps.add(Map.of("action", action, "compensate", compensate));
         return this;
@@ -160,7 +160,7 @@ public class Saga extends DtmTransaction {
             try {
                 this.customData = toJson(data);
             } catch (Exception e) {
-                throw new HttpException(e, DtmResult.CODE_FAILURE, DtmResult.FAILURE, "DTM Saga " + this.getGid() + " submit failed");
+                throw new HttpException(DtmResult.CODE_FAILURE, DtmResult.FAILURE, e, "DTM Saga " + this.getGid() + " submit failed");
             }
         }
     }

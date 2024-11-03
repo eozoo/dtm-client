@@ -11,12 +11,12 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.*;
 import com.cowave.commons.dtm.DtmResult;
-import com.cowave.commons.tools.HttpAsserts;
-import com.cowave.commons.tools.HttpException;
+import com.cowave.commons.response.HttpResponse;
+import com.cowave.commons.response.exception.HttpAsserts;
+import com.cowave.commons.response.exception.HttpException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.feign.codec.HttpResponse;
 
 import java.util.HashMap;
 import java.util.Map;

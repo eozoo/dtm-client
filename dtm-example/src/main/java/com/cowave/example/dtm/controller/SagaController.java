@@ -12,7 +12,7 @@ package com.cowave.example.dtm.controller;
 import com.cowave.commons.dtm.DtmClient;
 import com.cowave.commons.dtm.impl.Saga;
 import com.cowave.commons.dtm.DtmResult;
-import com.cowave.commons.tools.HttpException;
+import com.cowave.commons.response.exception.HttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

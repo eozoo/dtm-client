@@ -11,7 +11,7 @@ package com.cowave.commons.dtm.impl;
 
 import com.cowave.commons.dtm.DtmOperator;
 import com.cowave.commons.dtm.DtmResult;
-import com.cowave.commons.tools.HttpException;
+import com.cowave.commons.response.exception.HttpException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -79,7 +79,7 @@ public class Barrier extends DtmTransaction {
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
+            throw new HttpException(DtmResult.CODE_ERROR, DtmResult.ERROR, e, "DTM Barrier operate failed");
         } finally {
             if (connection != null) {
                 connection.close();
@@ -110,7 +110,7 @@ public class Barrier extends DtmTransaction {
                 connection.rollback();
                 connection.setAutoCommit(true);
             }
-            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
+            throw new HttpException(DtmResult.CODE_ERROR, DtmResult.ERROR, e, "DTM Barrier operate failed");
         } finally {
             if(connection != null){
                 connection.close();
@@ -132,7 +132,7 @@ public class Barrier extends DtmTransaction {
         } catch (HttpException e){
             throw e;
         } catch (Exception e) {
-            throw new HttpException(e, DtmResult.CODE_ERROR, DtmResult.ERROR, "DTM Barrier operate failed");
+            throw new HttpException(DtmResult.CODE_ERROR, DtmResult.ERROR, e, "DTM Barrier operate failed");
         }
     }
 

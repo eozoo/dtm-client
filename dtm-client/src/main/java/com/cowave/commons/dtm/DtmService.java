@@ -10,10 +10,10 @@
 package com.cowave.commons.dtm;
 
 import com.cowave.commons.dtm.impl.DtmParam;
+import com.cowave.commons.response.HttpResponse;
 import feign.*;
 import org.springframework.feign.annotation.FeignClient;
 import org.springframework.feign.annotation.Host;
-import org.springframework.feign.codec.HttpResponse;
 
 import java.util.Map;
 

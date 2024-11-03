@@ -9,10 +9,10 @@
  */
 package com.cowave.commons.dtm;
 
+import com.cowave.commons.response.HttpResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.feign.codec.HttpResponse;
 
 /**
  *
